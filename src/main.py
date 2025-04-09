@@ -1,5 +1,6 @@
 from textnode import *
 from htmlnode import *
+from markdownprocessing import *
 
 def main():
     someTextNode = TextNode("This is some **bold markup** text", TextType.TEXT)
