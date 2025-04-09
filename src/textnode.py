@@ -38,3 +38,26 @@ def text_node_to_html_node(text_node):
             return LeafNode("img", "", {"src": text_node.url, "alt": text_node.text})
         case _:
             raise Exception("Text type is not one of valid formats")
+
+def split_nodes_delimiter(old_nodes, delimiter, text_type):
+    new_nodes = []
+    for old_node in old_nodes:
+        if old_node.text_type != TextType.TEXT:
+            new_nodes.append(old_node)
+        else:
+            split_old_node = old_node.text.split(delimiter)
+            #Catch invalid markup, where there is no closing delimiter, ergo splits are divisible by 2
+            if len(split_old_node) % 2 == 0:
+                raise Exception("Invalid markup, no closing delimiter found")
+            #Iterate over splits, flip-flopping delimiter_found boolean to mark when a split is before a delimiter or after one
+            delimiter_found = False
+            for split in split_old_node:
+                if delimiter_found == False:
+                    new_nodes.append(TextNode(split, TextType.TEXT))
+                    delimiter_found = True
+                elif delimiter_found == True:
+                    new_nodes.append(TextNode(split, text_type))
+                    delimiter_found = False
+
+
+    return new_nodes

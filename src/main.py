@@ -1,20 +1,10 @@
 from textnode import *
 from htmlnode import *
 
-:
-
 def main():
-    SomeTextNode = TextNode("This is some text", TextType.IMAGE, "https://www.boot.dev")
-    print(SomeTextNode.text_type)
-    print(text_node_to_html_node(SomeTextNode).to_html())
-    SomeLeafNode = LeafNode("a", "Click me!", {"href": "https://www.google.com"})
-    print(SomeLeafNode.to_html())
-    SomeParentNode = ParentNode("p",[LeafNode("b", "Bold text"),LeafNode(None, "Normal text"),LeafNode("i", "italic text"),LeafNode(None, "Normal text"),],)
-    print(SomeParentNode.to_html())
-    grandchild_node2 = LeafNode("p", "grandchild2")
-    grandchild_node = LeafNode("b", "grandchild")
-    child_node = ParentNode("span", [grandchild_node, grandchild_node2])
-    parent_node = ParentNode("div", [child_node])
-    print(parent_node.to_html())
+    someTextNode = TextNode("This is some **bold markup** text", TextType.TEXT)
+    someOtherNode = TextNode("This is some more text with **bold** word **hell** it has **multiple**", TextType.TEXT)
+    other_new_nodes = split_nodes_delimiter([someTextNode, someOtherNode], "**", TextType.BOLD)
+    print(other_new_nodes)
 
 main()
