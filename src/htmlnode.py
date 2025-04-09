@@ -44,6 +44,6 @@ class ParentNode(HTMLNode):
         if self.children is None:
             raise ValueError("All ParentNodes must have atleast one child")
 
-        output = list(map(lambda child: f'{child.to_html()}', self.children))
+        output = map(lambda child: f'{child.to_html()}', self.children)
         return f'<{self.tag}{self.props_to_html()}>{"".join(output)}</{self.tag}>'
 
