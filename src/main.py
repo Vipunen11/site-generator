@@ -5,5 +5,5 @@ from fileprocessing import *
 
 def main():
     generate_files()
-    generate_page("content/index.md", "template.html", "public/index.html")
+    generate_pages_recursive("content", "template.html", "public")
 main()
