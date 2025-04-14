@@ -3,6 +3,27 @@ from htmlnode import *
 from markdownprocessing import *
 
 def main():
-    print(text_to_textnodes("This is **text** with an _italic_ word and a `code block` and an ![obi wan image](https://i.imgur.com/fJRm4Vk.jpeg) and a [link](https://boot.dev)"))
-    print(block_to_blocktype("- amogus \n- suss \n- hihii"))
+    md = """
+This is **bolded** paragraph
+text in a p
+tag here
+
+1. ordered
+2. list
+3. here
+
+- unordered
+- list
+- here
+
+> quote
+> block
+> here
+
+
+This is another paragraph with _italic_ text and `code` here
+
+"""
+    html_node = markdown_to_html_node(md)
+    print(html_node.to_html())
 main()

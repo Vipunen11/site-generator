@@ -1,6 +1,6 @@
-from htmlnode import LeafNode
+from htmlnode import *
 from enum import Enum
-from markdownprocessing import extract_markdown_images, extract_markdown_links
+from markdownprocessing import *
 import re
 
 class TextType(Enum):
@@ -130,3 +130,82 @@ def text_to_textnodes(text):
     linked = split_nodes_link(images)
     return linked
 
+def text_to_children(text):
+    textnodes = text_to_textnodes(text)
+    children = list(map(text_node_to_html_node, textnodes))
+    return children
+
+
+def markdown_to_html_node(markdown):
+    split_markdown = markdown_to_blocks(markdown)
+    html_nodes = []
+    for split_block in split_markdown:
+        html_node = block_to_html_node(split_block)
+        html_nodes.append(html_node)
+    return ParentNode("div", html_nodes)
+
+def block_to_html_node(block):
+    block_type = block_to_blocktype(block)
+    match block_type:
+        case BlockType.PARAGRAPH:
+            return paragraph_to_html_node(block)
+        case BlockType.HEADING:
+            return heading_to_html_node(block)
+        case BlockType.CODE:
+            return code_to_html_node(block)
+        case BlockType.ORDERED_LIST:
+            return ordered_list_to_html_node(block)
+        case BlockType.UNORDERED_LIST:
+            return unordered_list_to_html_node(block)
+        case BlockType.QUOTE:
+            return quote_to_html_node(block)
+        case _:
+            raise ValueError("Invalid Block Type!")
+
+
+
+def paragraph_to_html_node(block):
+    split_block = block.split("\n")
+    joined_paragraph = " ".join(split_block)
+    return ParentNode("p", text_to_children(joined_paragraph))
+
+def heading_to_html_node(block):
+    heading_number = 0
+    for char in block:
+        if char == "#":
+            heading_number += 1
+        else:
+            break
+    text = block[heading_number+1:]
+    return ParentNode(f"h{heading_number}", text_to_children(text))
+
+def code_to_html_node(block):
+    node = TextNode(block[4:-3], TextType.CODE)
+    child_node = text_node_to_html_node(node)
+    return ParentNode("pre", [child_node,])
+    
+def ordered_list_to_html_node(block):
+    split_block = block.split("\n")
+    fixed_splits = []
+    for split in split_block:
+        text = split[3:]
+        children = text_to_children(text)
+        fixed_splits.append(ParentNode("li", children))
+    return ParentNode("ol", fixed_splits)
+
+def unordered_list_to_html_node(block):
+    split_block = block.split("\n")
+    fixed_splits = []
+    for split in split_block:
+        text = split[2:]
+        children = text_to_children(text)
+        fixed_splits.append(ParentNode("li", children))
+    return ParentNode("ul", fixed_splits)
+
+def quote_to_html_node(block):
+    split_block = block.split("\n")
+    fixed_splits = []
+    for split in split_block:
+        fixed_splits.append(split.lstrip(">").strip())
+    children = text_to_children(" ".join(fixed_splits))
+    return ParentNode("blockquote", children)

@@ -57,6 +57,5 @@ class TestHTMLNode(unittest.TestCase):
         parent_node = ParentNode("div", [child_node])
         self.assertEqual(parent_node.to_html(),"<div><span><b>grandchild</b></span></div>",)
 
-
 if __name__ == "__main__":
     unittest.main()
