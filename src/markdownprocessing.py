@@ -50,4 +50,10 @@ def block_to_blocktype(block):
         return BlockType.ORDERED_LIST
     return BlockType.PARAGRAPH
 
-
+def extract_title(markdown):
+    split_lines = markdown.split("\n")
+    for line in split_lines:
+        stripped_line = line.strip()
+        if stripped_line[:2] == "# ":
+            return stripped_line[1:].strip()
+    raise Exception("No Header found")

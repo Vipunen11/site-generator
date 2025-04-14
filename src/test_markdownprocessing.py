@@ -46,5 +46,10 @@ This is the same paragraph on a new line
         block = "1. this\n2. is\n3. a\n4. ordered list"
         self.assertEqual(block_to_blocktype(block), BlockType.ORDERED_LIST)
 
+    def test_extract_title(self):
+        markdown = "# Hello"
+        self.assertEqual(extract_title(markdown), "Hello")
+
+
 if __name__ == "__main__":
     unittest.main()
