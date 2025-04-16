@@ -4,11 +4,11 @@ from textnode import *
 from htmlnode import *
 from markdownprocessing import *
 
-def generate_files():
-    shutil.rmtree('public')
-    os.mkdir('public')
-    public_directory = "public"
-    directory = "static"
+def generate_files(public_directory, source_directory):
+    if os.path.exists(public_directory):
+        shutil.rmtree(public_directory)
+    os.mkdir(public_directory)
+    directory = source_directory
     def recursive_copy(directory, public_directory):
         dir_list = os.listdir(directory)
         for filepath in dir_list:
@@ -23,7 +23,7 @@ def generate_files():
                 recursive_copy(new_directory, new_public_directory)
     return recursive_copy(directory, public_directory)
 
-def generate_page(from_path, template_path, dest_path):
+def generate_page(from_path, template_path, dest_path, basepath):
     print(f"Generating html page from markdown at {from_path} to {dest_path} using {template_path}")
     with open(template_path, 'r') as file:
         template = file.read()
@@ -33,20 +33,21 @@ def generate_page(from_path, template_path, dest_path):
     title = extract_title(markdown)
     title_inserted = template.replace("{{ Title }}", title)
     content_inserted = title_inserted.replace("{{ Content }}", content)
+    basepaths_fixed = content_inserted.replace('href="/', f'href="{basepath}').replace('src="/', f'src="{basepath}')
     with open(dest_path, 'x') as file:
-        file.write(content_inserted)
+        file.write(basepaths_fixed)
 
-def generate_pages_recursive(from_path, template_path, dest_path):
+def generate_pages_recursive(from_path, template_path, dest_path, basepath):
     dir_list = os.listdir(from_path)
     for filepath in dir_list:
         if os.path.isfile(os.path.join(from_path, filepath)):
             if filepath[-3:] == ".md":
-                generate_page(os.path.join(from_path, filepath), template_path, f"{os.path.join(dest_path, filepath)[:-2]}html")
+                generate_page(os.path.join(from_path, filepath), template_path, f"{os.path.join(dest_path, filepath)[:-2]}html", basepath)
         else:
             new_from_path = os.path.join(from_path, filepath)
             new_dest_path = os.path.join(dest_path, filepath)
             if os.path.exists(new_dest_path) == False:
                 print(f"Making directory {new_dest_path}")
                 os.mkdir(new_dest_path)
-            generate_pages_recursive(new_from_path, template_path, new_dest_path)
+            generate_pages_recursive(new_from_path, template_path, new_dest_path, basepath)
 
